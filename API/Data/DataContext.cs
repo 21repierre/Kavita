@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -129,6 +129,9 @@ public sealed class DataContext : IdentityDbContext<AppUser, AppRole, int,
         builder.Entity<Chapter>()
             .Property(b => b.ISBN)
             .HasDefaultValue(string.Empty);
+        /*builder.Entity<Chapter>()
+            .Property(b => b.OCRFile)
+            .HasDefaultValue(string.Empty);*/
 
         builder.Entity<AppUserDashboardStream>()
             .Property(b => b.StreamType)

@@ -18,6 +18,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {PersonalToC} from "../_models/readers/personal-toc";
 import {SeriesFilterV2} from "../_models/metadata/v2/series-filter-v2";
 import NoSleep from 'nosleep.js';
+import {ChapterOcr} from "../manga-reader/_models/chapter-ocr";
 
 
 export const CHAPTER_ID_DOESNT_EXIST = -1;
@@ -145,6 +146,10 @@ export class ReaderService {
 
   getChapterInfo(chapterId: number, includeDimensions = false) {
     return this.httpClient.get<ChapterInfo>(this.baseUrl + 'reader/chapter-info?chapterId=' + chapterId + '&includeDimensions=' + includeDimensions);
+  }
+
+  getChapterOcr(chapterId: number) {
+    return this.httpClient.get<ChapterOcr>(this.baseUrl + 'reader/ocr?chapterId=' + chapterId);
   }
 
   getFileDimensions(chapterId: number) {

@@ -646,6 +646,11 @@ public class ProcessSeries : IProcessSeries
             AddOrUpdateFileForChapter(chapter, info, forceUpdate);
             chapter.Number = Parser.Parser.MinNumberFromRange(info.Chapters).ToString(CultureInfo.InvariantCulture);
             chapter.Range = specialTreatment ? info.Filename : info.Chapters;
+
+            if (info.Filename.EndsWith(".mokuro"))
+            {
+                chapter.OCRFile = info.FullFilePath;
+            }
         }
 
 
@@ -671,6 +676,10 @@ public class ProcessSeries : IProcessSeries
 
     public void AddOrUpdateFileForChapter(Chapter chapter, ParserInfo info, bool forceUpdate = false)
     {
+        if (info.Filename.EndsWith(".mokuro"))
+        {
+            return;
+        }
         chapter.Files ??= new List<MangaFile>();
         var existingFile = chapter.Files.SingleOrDefault(f => f.FilePath == info.FullFilePath);
         var fileInfo = _directoryService.FileSystem.FileInfo.New(info.FullFilePath);

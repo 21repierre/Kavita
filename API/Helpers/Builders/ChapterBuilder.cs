@@ -127,4 +127,10 @@ public class ChapterBuilder : IEntityBuilder<Chapter>
         _chapter.CreatedUtc = created.ToUniversalTime();
         return this;
     }
+
+    public ChapterBuilder WithOCRFile(string file)
+    {
+        _chapter.OCRFile = file;
+        return this;
+    }
 }

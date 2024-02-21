@@ -6,6 +6,7 @@ import { ChapterInfo } from '../_models/chapter-info';
 import { DimensionMap } from '../_models/file-dimension';
 import { FITTING_OPTION } from '../_models/reader-enums';
 import { BookmarkInfo } from 'src/app/_models/manga-reader/bookmark-info';
+import {ChapterOcr} from "../_models/chapter-ocr";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class ManagaReaderService {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  load(chapterInfo: ChapterInfo | BookmarkInfo) {
+  load(chapterInfo: ChapterInfo | BookmarkInfo, ocr: ChapterOcr | null) {
     chapterInfo.pageDimensions!.forEach(d => {
       this.pageDimensions[d.pageNumber] = {
         height: d.height,

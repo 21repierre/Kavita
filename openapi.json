@@ -7,7 +7,7 @@
       "name": "GPL-3.0",
       "url": "https://github.com/Kareadita/Kavita/blob/develop/LICENSE"
     },
-    "version": "0.7.14.2"
+    "version": "0.7.14.3"
   },
   "servers": [
     {
@@ -4756,6 +4756,28 @@
             "schema": {
               "type": "boolean",
               "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Reader/ocr": {
+      "get": {
+        "tags": [
+          "Reader"
+        ],
+        "parameters": [
+          {
+            "name": "chapterId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -13877,6 +13899,11 @@
             "type": "string",
             "nullable": true
           },
+          "ocrFile": {
+            "type": "string",
+            "description": "OCR Files",
+            "nullable": true
+          },
           "people": {
             "type": "array",
             "items": {
@@ -14062,6 +14089,10 @@
           "isbn": {
             "type": "string",
             "description": "ISBN-13 (usually) of the Chapter",
+            "nullable": true
+          },
+          "ocrFile": {
+            "type": "string",
             "nullable": true
           }
         },

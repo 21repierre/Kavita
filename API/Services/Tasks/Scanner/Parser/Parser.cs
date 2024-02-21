@@ -645,6 +645,11 @@ public static class Parser
         MatchOptions, RegexTimeout
     );
 
+    private static readonly Regex OCRFileRegex = new Regex(
+        @"ocr",
+        MatchOptions, RegexTimeout
+    );
+
     private static readonly Regex EmptySpaceRegex = new Regex(
         @"\s{2,}",
         MatchOptions, RegexTimeout
@@ -676,6 +681,11 @@ public static class Parser
     public static bool HasSpecialMarker(string filePath)
     {
         return SpecialMarkerRegex.IsMatch(filePath);
+    }
+
+    public static bool IsOCRFile(string filePath)
+    {
+        return OCRFileRegex.IsMatch(filePath);
     }
 
     public static bool IsMangaSpecial(string filePath)

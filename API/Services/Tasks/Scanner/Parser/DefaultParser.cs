@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using API.Entities.Enums;
@@ -50,6 +51,12 @@ public class DefaultParser : IDefaultParser
         if (type == LibraryType.Image || Parser.IsImage(filePath))
         {
             // TODO: We can move this up one level
+            return ParseImage(filePath, rootPath, ret);
+        }
+
+        if (Parser.IsOCRFile(fileName))
+        {
+            ret.Format = MangaFormat.Image;
             return ParseImage(filePath, rootPath, ret);
         }
 

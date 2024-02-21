@@ -109,4 +109,6 @@ public class ChapterDto : IHasReadTimeEstimate
     /// </summary>
     /// <remarks>This is guaranteed to be Valid</remarks>
     public string ISBN { get; set; }
+
+    public string OCRFile { get; set; }
 }

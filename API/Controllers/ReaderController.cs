@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using API.Constants;
 using API.Data;
@@ -23,6 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MimeTypes;
+using Newtonsoft.Json.Linq;
 
 namespace API.Controllers;
 
@@ -124,6 +126,31 @@ public class ReaderController : BaseApiController
             var format = Path.GetExtension(path);
 
             return PhysicalFile(path, MimeTypeMap.GetMimeType(format), Path.GetFileName(path), true);
+        }
+        catch (Exception)
+        {
+            _cacheService.CleanupChapters(new []{ chapterId });
+            throw;
+        }
+    }
+
+    [HttpGet("ocr")]
+    [ResponseCache(CacheProfileName = ResponseCacheProfiles.Hour, VaryByQueryKeys = ["chapterId"])]
+    public async Task<ActionResult> GetOcr(int chapterId)
+    {
+        try
+        {
+            var chapter = await _cacheService.Ensure(chapterId, false);
+            if (chapter == null) return NoContent();
+            _logger.LogInformation("Fetching OCR on Chapter {ChapterId}", chapterId);
+            var path = chapter.OCRFile;
+            if (string.IsNullOrEmpty(path) || !System.IO.File.Exists(path))
+                return BadRequest(await _localizationService.Translate(User.GetUserId(), "no-ocr"));
+
+            var ocrContent = await System.IO.File.ReadAllTextAsync(path);
+            var ocrJson = JsonDocument.Parse(ocrContent);
+
+            return Ok(ocrJson);
         }
         catch (Exception)
         {

@@ -892,6 +892,7 @@ export class MangaReaderComponent implements OnInit, AfterViewInit, OnDestroy {
       progress: this.readerService.getProgress(this.chapterId),
       chapterInfo: this.readerService.getChapterInfo(this.chapterId, true),
       bookmarks: this.readerService.getBookmarks(this.chapterId),
+      ocr: this.readerService.getChapterOcr(this.chapterId),
     }).pipe(take(1)).subscribe(results => {
       if (this.readingListMode && (results.chapterInfo.seriesFormat === MangaFormat.EPUB || results.chapterInfo.seriesFormat === MangaFormat.PDF)) {
         // Redirect to the book reader.
@@ -900,6 +901,7 @@ export class MangaReaderComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
+      console.log(results.ocr);
       this.mangaReaderService.load(results.chapterInfo);
 
       this.continuousChapterInfos[ChapterInfoPosition.Current] = results.chapterInfo;

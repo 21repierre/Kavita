@@ -107,6 +107,11 @@ public class Chapter : IEntityDate, IHasReadTimeEstimate
     public string ISBN { get; set; } = string.Empty;
 
     /// <summary>
+    /// OCR Files
+    /// </summary>
+    public string? OCRFile { get; set; }
+
+    /// <summary>
     /// All people attached at a Chapter level. Usually Comics will have different people per issue.
     /// </summary>
     public ICollection<Person> People { get; set; } = new List<Person>();
