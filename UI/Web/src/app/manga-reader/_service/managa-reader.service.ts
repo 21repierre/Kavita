@@ -1,11 +1,11 @@
-import { ElementRef, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-import { PageSplitOption } from 'src/app/_models/preferences/page-split-option';
-import { ScalingOption } from 'src/app/_models/preferences/scaling-option';
-import { ReaderService } from 'src/app/_services/reader.service';
-import { ChapterInfo } from '../_models/chapter-info';
-import { DimensionMap } from '../_models/file-dimension';
-import { FITTING_OPTION } from '../_models/reader-enums';
-import { BookmarkInfo } from 'src/app/_models/manga-reader/bookmark-info';
+import {ElementRef, Injectable, Renderer2, RendererFactory2} from '@angular/core';
+import {PageSplitOption} from 'src/app/_models/preferences/page-split-option';
+import {ScalingOption} from 'src/app/_models/preferences/scaling-option';
+import {ReaderService} from 'src/app/_services/reader.service';
+import {ChapterInfo} from '../_models/chapter-info';
+import {DimensionMap} from '../_models/file-dimension';
+import {FITTING_OPTION} from '../_models/reader-enums';
+import {BookmarkInfo} from 'src/app/_models/manga-reader/bookmark-info';
 import {ChapterOcr} from "../_models/chapter-ocr";
 
 @Injectable({
@@ -14,14 +14,15 @@ import {ChapterOcr} from "../_models/chapter-ocr";
 export class ManagaReaderService {
 
   private pageDimensions: DimensionMap = {};
-  private pairs: {[key: number]: number} = {};
+  private pairs: { [key: number]: number } = {};
   private renderer: Renderer2;
+  private ocr: ChapterOcr | null = null;
 
   constructor(rendererFactory: RendererFactory2, private readerService: ReaderService) {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  load(chapterInfo: ChapterInfo | BookmarkInfo, ocr: ChapterOcr | null) {
+  load(chapterInfo: ChapterInfo | BookmarkInfo) {
     chapterInfo.pageDimensions!.forEach(d => {
       this.pageDimensions[d.pageNumber] = {
         height: d.height,
@@ -30,6 +31,10 @@ export class ManagaReaderService {
       };
     });
     this.pairs = chapterInfo.doublePairs!;
+  }
+
+  loadOcr(ocr: ChapterOcr) {
+    this.ocr = ocr;
   }
 
   adjustForDoubleReader(page: number) {
@@ -52,13 +57,12 @@ export class ManagaReaderService {
   }
 
   maxHeight() {
-    return  Object.values(this.pageDimensions).reduce((max, obj) => Math.max(max, obj.height), 0);
+    return Object.values(this.pageDimensions).reduce((max, obj) => Math.max(max, obj.height), 0);
   }
 
   maxWidth() {
-    return  Object.values(this.pageDimensions).reduce((max, obj) => Math.max(max, obj.width), 0);
+    return Object.values(this.pageDimensions).reduce((max, obj) => Math.max(max, obj.width), 0);
   }
-
 
 
   /**
@@ -123,14 +127,13 @@ export class ManagaReaderService {
 
   translateScalingOption(option: ScalingOption) {
     switch (option) {
-      case (ScalingOption.Automatic):
-      {
+      case (ScalingOption.Automatic): {
         const windowWidth = window.innerWidth
-                  || document.documentElement.clientWidth
-                  || document.body.clientWidth;
+          || document.documentElement.clientWidth
+          || document.body.clientWidth;
         const windowHeight = window.innerHeight
-                  || document.documentElement.clientHeight
-                  || document.body.clientHeight;
+          || document.documentElement.clientHeight
+          || document.body.clientHeight;
 
         const ratio = windowWidth / windowHeight;
         if (windowHeight > windowWidth) {
@@ -160,8 +163,6 @@ export class ManagaReaderService {
       }, 1000);
     }
   }
-
-
 
 
 }

@@ -1,13 +1,14 @@
 <ng-container *transloco="let t; read: 'manga-reader'">
   <div class="reader" #reader [ngStyle]="{overflow: (isFullscreen ? 'auto' : 'visible')}">
     @if(debugMode) {
-      <div class="fixed-top overlay">
-        @for(img of cachedImages; track img.src) {
-          <ng-container *ngIf="this.readerService.imageUrlToPageNum(img.src) as imageNum">
-            <span class="me-1" [ngClass]="{'current': imageNum === this.pageNum, 'loaded': img.complete}">{{this.readerService.imageUrlToPageNum(img.src)}}</span>
-          </ng-container>
-        }
-      </div>
+    <div class="fixed-top overlay">
+      @for(img of cachedImages; track img.src) {
+    <ng-container *ngIf="this.readerService.imageUrlToPageNum(img.src) as imageNum">
+      <span class="me-1"
+            [ngClass]="{'current': imageNum === this.pageNum, 'loaded': img.complete}">{{this.readerService.imageUrlToPageNum(img.src)}}</span>
+    </ng-container>
+    }
+    </div>
     }
     <div class="fixed-top overlay" *ngIf="menuOpen" [@slideFromTop]="menuOpen">
       <div style="display: flex; margin-top: 5px;">
@@ -17,9 +18,14 @@
         </button>
 
         <div>
-          <div style="font-weight: bold;">{{title}} <span class="clickable" *ngIf="incognitoMode" (click)="turnOffIncognito()" role="button" [attr.aria-label]="t('incognito-alt')">(<i class="fa fa-glasses"  aria-hidden="true"></i><span class="visually-hidden">{{t('incognito-title')}}</span>)</span></div>
+          <div style="font-weight: bold;">{{title}} <span class="clickable" *ngIf="incognitoMode"
+                                                          (click)="turnOffIncognito()" role="button"
+                                                          [attr.aria-label]="t('incognito-alt')">(<i
+            class="fa fa-glasses" aria-hidden="true"></i><span class="visually-hidden">{{t('incognito-title')}}</span>)</span>
+          </div>
           <div class="subtitle">
-            {{subtitle}} <span *ngIf="totalSeriesPages > 0">{{t('series-progress', {percentage: (Math.min(1, ((totalSeriesPagesRead + pageNum) / totalSeriesPages)) | percent)}) }}</span>
+            {{subtitle}} <span
+            *ngIf="totalSeriesPages > 0">{{t('series-progress', {percentage: (Math.min(1, ((totalSeriesPagesRead + pageNum) / totalSeriesPages)) | percent)}) }}</span>
           </div>
         </div>
 
@@ -28,18 +34,23 @@
             <i class="fa-regular fa-rectangle-list" aria-hidden="true"></i>
             <span class="visually-hidden">{{t('shortcuts-menu-alt')}}</span>
           </button>
-          <button *ngIf="!bookmarkMode && hasBookmarkRights" class="btn btn-icon" role="checkbox" [attr.aria-checked]="CurrentPageBookmarked"
-                  title="{{t(CurrentPageBookmarked ? 'unbookmark-page-tooltip' : 'bookmark-page-tooltip')}}" (click)="bookmarkPage()">
+          <button *ngIf="!bookmarkMode && hasBookmarkRights" class="btn btn-icon" role="checkbox"
+                  [attr.aria-checked]="CurrentPageBookmarked"
+                  title="{{t(CurrentPageBookmarked ? 'unbookmark-page-tooltip' : 'bookmark-page-tooltip')}}"
+                  (click)="bookmarkPage()">
             <i class="{{CurrentPageBookmarked ? 'fa' : 'far'}} fa-bookmark" aria-hidden="true"></i>
-            <span class="visually-hidden">{{t(CurrentPageBookmarked ? 'unbookmark-page-tooltip' : 'bookmark-page-tooltip')}}</span>
+            <span
+              class="visually-hidden">{{t(CurrentPageBookmarked ? 'unbookmark-page-tooltip' : 'bookmark-page-tooltip')}}</span>
           </button>
         </div>
       </div>
     </div>
-    <app-loading [loading]="isLoading || (!(currentImage$ | async)?.complete && this.readerMode !== ReaderMode.Webtoon)" [absolute]="true"></app-loading>
+    <app-loading [loading]="isLoading || (!(currentImage$ | async)?.complete && this.readerMode !== ReaderMode.Webtoon)"
+                 [absolute]="true"></app-loading>
     <div class="reading-area"
          ngSwipe (swipeEnd)="onSwipeEnd($event)" (swipeMove)="onSwipeMove($event)"
-         [ngStyle]="{'background-color': backgroundColor, 'height': readerMode === ReaderMode.Webtoon ? 'inherit' : 'calc(var(--vh)*100)'}" #readingArea>
+         [ngStyle]="{'background-color': backgroundColor, 'height': readerMode === ReaderMode.Webtoon ? 'inherit' : 'calc(var(--vh)*100)'}"
+         #readingArea>
 
       <ng-container *ngIf="readerMode !== ReaderMode.Webtoon; else webtoon">
         <div (dblclick)="bookmarkPage($event)">
@@ -53,21 +64,25 @@
 
         <!-- Pagination controls and screen hints-->
         <div class="pagination-area">
-          <div class="{{readerMode === ReaderMode.LeftRight ? 'left' : 'top'}} {{clickOverlayClass('left')}}" (click)="handlePageChange($event, KeyDirection.Left)"
+          <div class="{{readerMode === ReaderMode.LeftRight ? 'left' : 'top'}} {{clickOverlayClass('left')}}"
+               (click)="handlePageChange($event, KeyDirection.Left)"
                [ngStyle]="{'height': (readerMode === ReaderMode.LeftRight ? ImageHeight: '25%'), 'max-height': MaxHeight}">
             <div *ngIf="showClickOverlay">
-              <i class="fa fa-angle-{{readingDirection === ReadingDirection.RightToLeft ? 'double-' : ''}}{{readerMode === ReaderMode.LeftRight ? 'left' : 'up'}}"
-                 [title]="t('prev-page-tooltip')" aria-hidden="true"></i>
+              <i
+                class="fa fa-angle-{{readingDirection === ReadingDirection.RightToLeft ? 'double-' : ''}}{{readerMode === ReaderMode.LeftRight ? 'left' : 'up'}}"
+                [title]="t('prev-page-tooltip')" aria-hidden="true"></i>
             </div>
           </div>
-          <div class="{{readerMode === ReaderMode.LeftRight ? 'right' : 'bottom'}} {{clickOverlayClass('right')}}" (click)="handlePageChange($event, KeyDirection.Right)"
+          <div class="{{readerMode === ReaderMode.LeftRight ? 'right' : 'bottom'}} {{clickOverlayClass('right')}}"
+               (click)="handlePageChange($event, KeyDirection.Right)"
                [ngStyle]="{'height': (readerMode === ReaderMode.LeftRight ? ImageHeight: '25%'),
                                 'left': 'inherit',
                                 'right': RightPaginationOffset + 'px',
                                 'max-height': MaxHeight}">
             <div *ngIf="showClickOverlay">
-              <i class="fa fa-angle-{{readingDirection === ReadingDirection.LeftToRight ? 'double-' : ''}}{{readerMode === ReaderMode.LeftRight ? 'right' : 'down'}}"
-                 [title]="t('next-page-tooltip')" aria-hidden="true"></i>
+              <i
+                class="fa fa-angle-{{readingDirection === ReadingDirection.LeftToRight ? 'double-' : ''}}{{readerMode === ReaderMode.LeftRight ? 'right' : 'down'}}"
+                [title]="t('next-page-tooltip')" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -131,41 +146,62 @@
       <div class="mb-3" *ngIf="pageOptions !== undefined && pageOptions.ceil !== undefined">
         <span class="visually-hidden" id="slider-info"></span>
         <div class="row g-0">
-          <button class="btn btn-icon col-1" [disabled]="prevChapterDisabled" (click)="loadPrevChapter();resetMenuCloseTimer();" [title]="t('prev-chapter-tooltip')"><i class="fa fa-fast-backward" aria-hidden="true"></i></button>
-          <button class="btn btn-icon col-2" [disabled]="prevPageDisabled || pageNum === 0" (click)="goToPage(0);resetMenuCloseTimer();" [title]="t('first-page-tooltip')"><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+          <button class="btn btn-icon col-1" [disabled]="prevChapterDisabled"
+                  (click)="loadPrevChapter();resetMenuCloseTimer();" [title]="t('prev-chapter-tooltip')"><i
+            class="fa fa-fast-backward" aria-hidden="true"></i></button>
+          <button class="btn btn-icon col-2" [disabled]="prevPageDisabled || pageNum === 0"
+                  (click)="goToPage(0);resetMenuCloseTimer();" [title]="t('first-page-tooltip')"><i
+            class="fa fa-step-backward" aria-hidden="true"></i></button>
           <div class="col custom-slider" *ngIf="pageOptions.ceil > 0; else noSlider">
-            <ngx-slider [options]="pageOptions" [value]="pageNum" aria-describedby="slider-info" [manualRefresh]="refreshSlider" (userChangeEnd)="sliderPageUpdate($event);startMenuCloseTimer()" (userChange)="sliderDragUpdate($event)" (userChangeStart)="cancelMenuCloseTimer();"></ngx-slider>
+            <ngx-slider [options]="pageOptions" [value]="pageNum" aria-describedby="slider-info"
+                        [manualRefresh]="refreshSlider" (userChangeEnd)="sliderPageUpdate($event);startMenuCloseTimer()"
+                        (userChange)="sliderDragUpdate($event)"
+                        (userChangeStart)="cancelMenuCloseTimer();"></ngx-slider>
           </div>
           <ng-template #noSlider>
             <div class="col custom-slider">
-              <ngx-slider [options]="pageOptions" [value]="pageNum" aria-describedby="slider-info" (userChangeEnd)="startMenuCloseTimer()" (userChangeStart)="cancelMenuCloseTimer();"></ngx-slider>
+              <ngx-slider [options]="pageOptions" [value]="pageNum" aria-describedby="slider-info"
+                          (userChangeEnd)="startMenuCloseTimer()"
+                          (userChangeStart)="cancelMenuCloseTimer();"></ngx-slider>
             </div>
           </ng-template>
-          <button class="btn btn-icon col-2" [disabled]="nextPageDisabled || pageNum >= maxPages - 1" (click)="goToPage(this.maxPages);resetMenuCloseTimer();" [title]="t('last-page-tooltip')"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
-          <button class="btn btn-icon col-1" [disabled]="nextChapterDisabled" (click)="loadNextChapter();resetMenuCloseTimer();" [title]="t('next-chapter-tooltip')"><i class="fa fa-fast-forward" aria-hidden="true"></i></button>
+          <button class="btn btn-icon col-2" [disabled]="nextPageDisabled || pageNum >= maxPages - 1"
+                  (click)="goToPage(this.maxPages);resetMenuCloseTimer();" [title]="t('last-page-tooltip')"><i
+            class="fa fa-step-forward" aria-hidden="true"></i></button>
+          <button class="btn btn-icon col-1" [disabled]="nextChapterDisabled"
+                  (click)="loadNextChapter();resetMenuCloseTimer();" [title]="t('next-chapter-tooltip')"><i
+            class="fa fa-fast-forward" aria-hidden="true"></i></button>
         </div>
       </div>
       <div class="row pt-4 ms-2 me-2 mb-2">
         <div class="col">
-          <button class="btn btn-icon" (click)="setReadingDirection();resetMenuCloseTimer();" [disabled]="readerMode === ReaderMode.Webtoon || readerMode === ReaderMode.UpDown" aria-describedby="reading-direction" [title]="t('reading-direction-tooltip') + readingDirection === ReadingDirection.LeftToRight ? t('left-to-right-alt') : t('right-to-left-alt')">
-            <i class="fa fa-angle-double-{{readingDirection === ReadingDirection.LeftToRight ? 'right' : 'left'}}" aria-hidden="true"></i>
-            <span id="reading-direction" class="visually-hidden">{{readingDirection === ReadingDirection.LeftToRight ? t('left-to-right-alt') : t('right-to-left-alt')}}</span>
+          <button class="btn btn-icon" (click)="setReadingDirection();resetMenuCloseTimer();"
+                  [disabled]="readerMode === ReaderMode.Webtoon || readerMode === ReaderMode.UpDown"
+                  aria-describedby="reading-direction"
+                  [title]="t('reading-direction-tooltip') + readingDirection === ReadingDirection.LeftToRight ? t('left-to-right-alt') : t('right-to-left-alt')">
+            <i class="fa fa-angle-double-{{readingDirection === ReadingDirection.LeftToRight ? 'right' : 'left'}}"
+               aria-hidden="true"></i>
+            <span id="reading-direction"
+                  class="visually-hidden">{{readingDirection === ReadingDirection.LeftToRight ? t('left-to-right-alt') : t('right-to-left-alt')}}</span>
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-icon" [title]="t('reading-mode-tooltip')" (click)="toggleReaderMode();resetMenuCloseTimer();">
+          <button class="btn btn-icon" [title]="t('reading-mode-tooltip')"
+                  (click)="toggleReaderMode();resetMenuCloseTimer();">
             <i class="fa {{this.readerMode | readerModeIcon}}" aria-hidden="true"></i>
             <span class="visually-hidden">{{t('reading-mode-tooltip')}}</span>
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-icon" title="{{this.isFullscreen ? t('collapse') : t('fullscreen')}}" (click)="toggleFullscreen();resetMenuCloseTimer();">
+          <button class="btn btn-icon" title="{{this.isFullscreen ? t('collapse') : t('fullscreen')}}"
+                  (click)="toggleFullscreen();resetMenuCloseTimer();">
             <i class="fa {{this.isFullscreen | fullscreenIcon}}" aria-hidden="true"></i>
             <span class="visually-hidden">{{this.isFullscreen ? t('collapse') : t('fullscreen')}}</span>
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-icon" [title]="t('settings-tooltip')" (click)="settingsOpen = !settingsOpen;resetMenuCloseTimer();">
+          <button class="btn btn-icon" [title]="t('settings-tooltip')"
+                  (click)="settingsOpen = !settingsOpen;resetMenuCloseTimer();">
             <i class="fa fa-sliders-h" aria-hidden="true"></i>
             <span class="visually-hidden">{{t('settings-tooltip')}}</span>
           </button>
@@ -185,7 +221,8 @@
             </div>
 
             <div class="col-md-6 col-sm-12">
-              <label for="page-fitting" class="form-label">{{t('image-scaling-label')}}</label>&nbsp;<i class="{{FittingOption | fittingIcon}}" aria-hidden="true"></i>
+              <label for="page-fitting" class="form-label">{{t('image-scaling-label')}}</label>&nbsp;<i
+              class="{{FittingOption | fittingIcon}}" aria-hidden="true"></i>
               <select class="form-control" id="page-fitting" formControlName="fittingOption">
                 <option value="full-height">{{t('height')}}</option>
                 <option value="full-width">{{t('width')}}</option>
@@ -239,7 +276,7 @@
               <div class="mb-3">
                 <div class="mb-3">
                   <div class="form-check form-switch">
-                    <input type="checkbox" id="auto-close" formControlName="autoCloseMenu" class="form-check-input" >
+                    <input type="checkbox" id="auto-close" formControlName="autoCloseMenu" class="form-check-input">
                     <label class="form-check-label" for="auto-close">{{t('auto-close-menu-label')}}</label>
                   </div>
                 </div>
@@ -248,7 +285,8 @@
               <div class="mb-3">
                 <div class="mb-3">
                   <div class="form-check form-switch">
-                    <input type="checkbox" id="swipe-to-paginate" formControlName="swipeToPaginate" class="form-check-input" >
+                    <input type="checkbox" id="swipe-to-paginate" formControlName="swipeToPaginate"
+                           class="form-check-input">
                     <label class="form-check-label" for="swipe-to-paginate">{{t('swipe-enabled-label')}}</label>
                   </div>
                 </div>

@@ -1,33 +1,36 @@
-import { DOCUMENT, NgIf, AsyncPipe } from '@angular/common';
+import {AsyncPipe, DOCUMENT, NgForOf} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component, DestroyRef,
+  Component,
+  DestroyRef, ElementRef,
   EventEmitter,
   inject,
   Inject,
   Input,
   OnInit,
-  Output
+  Output, QueryList, ViewChildren, AfterViewInit, ViewChild
 } from '@angular/core';
 import {combineLatest, filter, map, Observable, of, shareReplay, switchMap, tap} from 'rxjs';
-import { PageSplitOption } from 'src/app/_models/preferences/page-split-option';
-import { ReaderMode } from 'src/app/_models/preferences/reader-mode';
-import { LayoutMode } from '../../_models/layout-mode';
-import { FITTING_OPTION, PAGING_DIRECTION } from '../../_models/reader-enums';
-import { ReaderSetting } from '../../_models/reader-setting';
-import { ImageRenderer } from '../../_models/renderer';
-import { ManagaReaderService } from '../../_service/managa-reader.service';
+import {PageSplitOption} from 'src/app/_models/preferences/page-split-option';
+import {ReaderMode} from 'src/app/_models/preferences/reader-mode';
+import {LayoutMode} from '../../_models/layout-mode';
+import {FITTING_OPTION, PAGING_DIRECTION} from '../../_models/reader-enums';
+import {ReaderSetting} from '../../_models/reader-setting';
+import {ImageRenderer} from '../../_models/renderer';
+import {ManagaReaderService} from '../../_service/managa-reader.service';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { SafeStylePipe } from '../../../_pipes/safe-style.pipe';
+import {SafeStylePipe} from '../../../_pipes/safe-style.pipe';
+import {ChapterOcrPage} from "../../_models/chapter-ocr";
+import {getTemplateIdentifiers} from "@angular/compiler-cli/src/ngtsc/indexer/src/template";
 
 @Component({
-    selector: 'app-single-renderer',
-    templateUrl: './single-renderer.component.html',
-    styleUrls: ['./single-renderer.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [AsyncPipe, SafeStylePipe]
+  selector: 'app-single-renderer',
+  templateUrl: './single-renderer.component.html',
+  styleUrls: ['./single-renderer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [AsyncPipe, SafeStylePipe, NgForOf]
 })
 export class SingleRendererComponent implements OnInit, ImageRenderer {
 
@@ -35,7 +38,7 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
   @Input({required: true}) image$!: Observable<HTMLImageElement | null>;
   @Input({required: true}) bookmark$!: Observable<number>;
   @Input({required: true}) showClickOverlay$!: Observable<boolean>;
-  @Input({required: true}) pageNum$!: Observable<{pageNum: number, maxPages: number}>;
+  @Input({required: true}) pageNum$!: Observable<{ pageNum: number, maxPages: number }>;
 
   @Output() imageHeight: EventEmitter<number> = new EventEmitter<number>();
   private readonly destroyRef = inject(DestroyRef);
@@ -47,17 +50,28 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
   darkness$: Observable<string> = of('brightness(100%)');
   emulateBookClass$!: Observable<string>;
   currentImage!: HTMLImageElement;
+  currentOcr!: ChapterOcrPage | null;
   layoutMode: LayoutMode = LayoutMode.Single;
   pageSplit: PageSplitOption = PageSplitOption.FitSplit;
 
   pageNum: number = 0;
   maxPages: number = 1;
 
-  get ReaderMode() {return ReaderMode;}
-  get LayoutMode() {return LayoutMode;}
+  @ViewChild("image")
+  renderedImage!: ElementRef
+
+  get ReaderMode() {
+    return ReaderMode;
+  }
+
+  get LayoutMode() {
+    return LayoutMode;
+  }
 
   constructor(private readonly cdRef: ChangeDetectorRef, public mangaReaderService: ManagaReaderService,
-    @Inject(DOCUMENT) private document: Document) { }
+              @Inject(DOCUMENT) private document: Document) {
+  }
+
 
   ngOnInit(): void {
     this.readerModeClass$ = this.readerSettings$.pipe(
@@ -90,7 +104,8 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
         this.pageNum = pageInfo.pageNum;
         this.maxPages = pageInfo.maxPages;
       }),
-    ).subscribe(() => {});
+    ).subscribe(() => {
+    });
 
     this.darkness$ = this.readerSettings$.pipe(
       map(values => 'brightness(' + values.darkness + '%)'),
@@ -111,7 +126,8 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
         this.pageSplit = values.pageSplit;
         this.cdRef.markForCheck();
       })
-    ).subscribe(() => {});
+    ).subscribe(() => {
+    });
 
     this.bookmark$.pipe(
       takeUntilDestroyed(this.destroyRef),
@@ -122,7 +138,8 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
         this.mangaReaderService.applyBookmarkEffect(elements);
       }),
       filter(_ => this.isValid()),
-    ).subscribe(() => {});
+    ).subscribe(() => {
+    });
 
     this.imageFitClass$ = combineLatest([this.readerSettings$, this.pageNum$]).pipe(
       map(values => values[0].fitting),
@@ -130,7 +147,7 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
         if (
           this.mangaReaderService.isWidePage(this.pageNum) &&
           this.mangaReaderService.shouldRenderAsFitSplit(this.pageSplit)
-          ) {
+        ) {
           // Rewriting to fit to width for this cover image
           return FITTING_OPTION.WIDTH + ' fit-to-screen wide';
         }
@@ -171,24 +188,40 @@ export class SingleRendererComponent implements OnInit, ImageRenderer {
     if (img === null || img.length === 0 || img[0] === null) return;
     if (!this.isValid()) return;
 
+
     this.currentImage = img[0];
     this.cdRef.markForCheck();
     this.imageHeight.emit(this.currentImage.height);
   }
 
+  ocrRatio: number = 1;
+
+  renderOcr(ocrPage: ChapterOcrPage | null): void {
+    this.currentOcr = ocrPage
+    this.ocrRatio = window.innerHeight / ocrPage?.img_height!
+    //console.log(ocrPage?.img_width)
+    //console.log(this.ocrRatio)
+  }
+
   shouldMovePrev(): boolean {
     return true;
   }
+
   shouldMoveNext(): boolean {
     return true;
   }
+
   getPageAmount(direction: PAGING_DIRECTION): number {
     if (!this.isValid() || this.mangaReaderService.shouldSplit(this.currentImage, this.pageSplit)) return 0;
     return 1;
   }
-  reset(): void {}
+
+  reset(): void {
+  }
 
   getBookmarkPageCount(): number {
     return 1;
   }
+
+  protected readonly window = window;
 }

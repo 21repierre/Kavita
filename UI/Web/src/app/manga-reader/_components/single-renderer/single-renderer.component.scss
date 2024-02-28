@@ -1,1 +1,28 @@
 @use '../../../../manga-reader-common';
+
+div.ocr {
+  position: absolute;
+  top: 0;
+
+  div.ocr-block {
+    position: absolute;
+    color: #000000;
+    display: flex;
+
+    &.ocr-vertical {
+      flex-direction: row-reverse;
+    }
+
+    div.ocr-line {
+      visibility: hidden;
+    }
+
+    &:hover {
+      background-color: #fff;
+
+      div.ocr-line {
+        visibility: visible;
+      }
+    }
+  }
+}
