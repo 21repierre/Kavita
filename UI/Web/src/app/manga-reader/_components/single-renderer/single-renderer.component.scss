@@ -7,20 +7,27 @@ div.ocr {
   div.ocr-block {
     position: absolute;
     color: #000000;
-    display: flex;
+    font-size: 12px;
 
     &.ocr-vertical {
-      flex-direction: row-reverse;
+      writing-mode: vertical-rl;
     }
 
-    div.ocr-line {
+    p.ocr-line {
       visibility: hidden;
+      margin: 0;
+      white-space: nowrap;
+      letter-spacing: 0.1em;
+      line-height: 1.1em;
+      text-align: left;
     }
 
     &:hover {
       background-color: #fff;
 
-      div.ocr-line {
+      p.ocr-line {
+        background-color: #fff;
+        display: table;
         visibility: visible;
       }
     }

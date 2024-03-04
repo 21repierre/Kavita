@@ -14,13 +14,14 @@
       >
         <div *ngFor="let block of currentOcr?.blocks" class="ocr-block"
              [class.ocr-vertical] = "block.vertical"
-             [style.font-size]="block.font_size*ocrRatio*0.9 + 'px'"
              [style.left]="ocrRatio*block.box[0] + 'px'"
              [style.top]="ocrRatio*block.box[1] + 'px'"
+             [style.width]="(ocrRatio*block.box[2]-ocrRatio*block.box[0]) + 'px'"
+             [style.height]="(ocrRatio*block.box[3]-ocrRatio*block.box[1]) + 'px'"
         >
-          <div *ngFor="let line of block.lines" class="ocr-line">
+          <p *ngFor="let line of block.lines" class="ocr-line">
             {{ line }}
-          </div>
+          </p>
         </div>
       </div>
     }
