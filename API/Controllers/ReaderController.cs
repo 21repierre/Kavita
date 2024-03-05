@@ -145,7 +145,8 @@ public class ReaderController : BaseApiController
             _logger.LogInformation("Fetching OCR on Chapter {ChapterId}", chapterId);
             var path = chapter.OCRFile;
             if (string.IsNullOrEmpty(path) || !System.IO.File.Exists(path))
-                return BadRequest(await _localizationService.Translate(User.GetUserId(), "no-ocr"));
+                return Ok();
+                // return BadRequest(await _localizationService.Translate(User.GetUserId(), "no-ocr"));
 
             var ocrContent = await System.IO.File.ReadAllTextAsync(path);
             var ocrJson = JsonDocument.Parse(ocrContent);
